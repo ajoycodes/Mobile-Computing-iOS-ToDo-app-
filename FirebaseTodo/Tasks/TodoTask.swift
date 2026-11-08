@@ -22,12 +22,19 @@ struct TodoTask: Identifiable, Equatable {
         updatedAt = (data["updatedAt"] as? Timestamp)?.dateValue()
     }
 
-    /// "Added Nov 8, 3:12 PM" or "Edited Nov 8, 3:40 PM".
+    /// "2h ago", "yesterday", or "Edited 5m ago" once the task has been changed.
     var timeLabel: String {
         guard let createdAt else { return "" }
         if let updatedAt, updatedAt.timeIntervalSince(createdAt) > 1 {
-            return "Edited \(updatedAt.formatted(date: .abbreviated, time: .shortened))"
+            return "Edited \(Self.relative.localizedString(for: updatedAt, relativeTo: .now))"
         }
-        return "Added \(createdAt.formatted(date: .abbreviated, time: .shortened))"
+        return Self.relative.localizedString(for: createdAt, relativeTo: .now)
     }
+
+    private static let relative: RelativeDateTimeFormatter = {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        formatter.dateTimeStyle = .named
+        return formatter
+    }()
 }

@@ -13,7 +13,7 @@ enum EditorTarget: Identifiable {
     }
 }
 
-/// Title + description form, used for both adding and editing.
+/// Title + description sheet, used for both adding and editing.
 struct TaskEditorView: View {
     let target: EditorTarget
     let onSave: (_ title: String, _ description: String) async throws -> Void
@@ -23,7 +23,11 @@ struct TaskEditorView: View {
     @State private var description: String
     @State private var isSaving = false
     @State private var errorMessage: String?
-    @FocusState private var titleFocused: Bool
+    @FocusState private var focus: Field?
+
+    private enum Field {
+        case title, description
+    }
 
     init(target: EditorTarget, onSave: @escaping (String, String) async throws -> Void) {
         self.target = target
@@ -47,55 +51,88 @@ struct TaskEditorView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Title") {
-                    TextField("What needs doing?", text: $title)
-                        .focused($titleFocused)
-                        .submitLabel(.done)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    Text(isNew ? "New task" : "Edit task")
+                        .font(.system(size: 26))
+                        .tracking(-0.4)
+                    Spacer()
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.footnote.weight(.bold))
+                            .foregroundStyle(.secondary)
+                            .frame(width: 32, height: 32)
+                            .background(Pearl.well, in: Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(isSaving)
+                    .accessibilityLabel("Close")
                 }
-                Section("Description") {
-                    TextField("Add details (optional)", text: $description, axis: .vertical)
-                        .lineLimit(4...12)
-                }
+
+                FieldLabel("Title")
+                    .padding(.top, 22)
+                TextField("What needs doing?", text: $title)
+                    .focused($focus, equals: .title)
+                    .submitLabel(.next)
+                    .onSubmit { focus = .description }
+                    .pearlWell()
+
+                FieldLabel("Description")
+                    .padding(.top, 16)
+                TextField("Add details (optional)", text: $description, axis: .vertical)
+                    .focused($focus, equals: .description)
+                    .lineLimit(4...8)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 14)
+                    .frame(minHeight: 116, alignment: .topLeading)
+                    .background(Pearl.well, in: RoundedRectangle(cornerRadius: Pearl.wellRadius, style: .continuous))
+
                 if let errorMessage {
-                    Section {
-                        Text(errorMessage).foregroundStyle(.red)
-                    }
+                    Text(errorMessage)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                        .padding(.top, 12)
+                        .padding(.leading, 4)
                 }
-            }
-            .navigationTitle(isNew ? "New Task" : "Edit Task")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                        .disabled(isSaving)
-                }
-                ToolbarItem(placement: .confirmationAction) {
+
+                Button(action: save) {
                     if isSaving {
-                        ProgressView()
+                        ProgressView().tint(Pearl.onInk)
                     } else {
-                        Button(isNew ? "Add" : "Save", action: save)
-                            .fontWeight(.semibold)
-                            .disabled(cleanTitle.isEmpty)
+                        Text(isNew ? "Add Task" : "Save Changes")
                     }
                 }
+                .buttonStyle(InkButtonStyle())
+                .disabled(cleanTitle.isEmpty || isSaving)
+                .padding(.top, 22)
             }
-            .interactiveDismissDisabled(isSaving)
-            .onChange(of: title) { _, newValue in
-                if newValue.count > TodoTask.titleLimit { title = String(newValue.prefix(TodoTask.titleLimit)) }
-            }
-            .onChange(of: description) { _, newValue in
-                if newValue.count > TodoTask.descriptionLimit { description = String(newValue.prefix(TodoTask.descriptionLimit)) }
-            }
-            .onAppear {
-                if isNew { titleFocused = true }
-            }
+            .padding(.horizontal, 22)
+            .padding(.top, 26)
+            .padding(.bottom, 16)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        .presentationDetents([.height(470), .large])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(Pearl.card)
+        .presentationCornerRadius(40)
+        .interactiveDismissDisabled(isSaving)
+        .onChange(of: title) { _, newValue in
+            if newValue.count > TodoTask.titleLimit { title = String(newValue.prefix(TodoTask.titleLimit)) }
+        }
+        .onChange(of: description) { _, newValue in
+            if newValue.count > TodoTask.descriptionLimit { description = String(newValue.prefix(TodoTask.descriptionLimit)) }
+        }
+        .onAppear {
+            if isNew { focus = .title }
         }
     }
 
     private func save() {
         let cleanDescription = description.trimmingCharacters(in: .whitespacesAndNewlines)
+        focus = nil
         isSaving = true
         errorMessage = nil
         Task {
