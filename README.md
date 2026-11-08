@@ -17,6 +17,31 @@ A SwiftUI todo list for iPhone, built for the Mobile Computing course. Each user
 
 SwiftUI, iOS 17+, Firebase iOS SDK 13 (Swift Package Manager). The Xcode project is generated from `project.yml` with [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
+## Firebase integration
+
+The app is connected to a real Firebase project and uses the official Firebase iOS SDK:
+
+| Firebase service | What it does in the app | Code |
+| --- | --- | --- |
+| **Firebase Authentication** (Email/Password) | Create account, sign in, sign out, and stay signed in between launches | `Auth/AuthStore.swift` |
+| **Cloud Firestore** | Stores each user's tasks and streams every change to the list live | `Tasks/TaskStore.swift` |
+| **Firestore security rules** | Only the signed-in owner can read or change their tasks, and the fields are validated | `firestore.rules` |
+
+Firebase is started in `App/FirebaseSetup.swift` from the project's `GoogleService-Info.plist`.
+
+How a task moves through Firebase:
+
+1. Signing up or in with Firebase Authentication gives the user a unique id (`uid`).
+2. Adding a task writes a document to `users/{uid}/tasks/{taskId}` with the title, description and server timestamps.
+3. The task list listens to `users/{uid}/tasks`, so new, edited and deleted tasks show up instantly.
+4. Editing updates that document; deleting removes it. The security rules check every request.
+
+Tasks saved by the app, as seen in the Firebase console (Cloud Firestore → Data):
+
+<img src="Screenshots/firestore-console.png" width="800" alt="Firestore console showing users, a user id and its tasks collection with three task documents">
+
+The `users/{uid}` document appears in italics because it has no fields of its own; the data lives in its `tasks` subcollection.
+
 ## Connect it to the Firebase project
 
 Authentication (Email/Password), the Firestore database and the rules in `firestore.rules` are already set up in project `todo-f0aa6`. The iOS app only needs its own config file:
