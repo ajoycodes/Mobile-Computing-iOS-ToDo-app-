@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct AuthView: View {
-    enum Mode: String, CaseIterable, Identifiable {
-        case signIn = "Sign in"
-        case createAccount = "Create account"
-        var id: Self { self }
+    enum Mode: Hashable {
+        case signIn, createAccount
+
+        var title: String { self == .signIn ? "Sign In" : "Create Account" }
     }
 
     private enum Field {
@@ -25,91 +25,93 @@ struct AuthView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 28) {
-                header
+            VStack(spacing: 0) {
+                AppBadge(size: 76)
 
-                Picker("Mode", selection: $mode) {
-                    ForEach(Mode.allCases) { Text($0.rawValue).tag($0) }
-                }
-                .pickerStyle(.segmented)
+                Text(isCreating ? "Create your account" : "Welcome back")
+                    .font(.system(size: 32))
+                    .tracking(-0.4)
+                    .padding(.top, 22)
+                    .contentTransition(.opacity)
 
-                VStack(spacing: 12) {
-                    TextField("Email", text: $email)
-                        .textContentType(.username)
-                        .keyboardType(.emailAddress)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .focused($focus, equals: .email)
-                        .submitLabel(.next)
-                        .onSubmit { focus = .password }
-                        .fieldStyle()
+                Text(isCreating ? "Your tasks are saved to your account." : "Sign in to see your tasks.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 6)
+                    .contentTransition(.opacity)
 
-                    SecureField("Password", text: $password)
-                        .textContentType(isCreating ? .newPassword : .password)
-                        .focused($focus, equals: .password)
-                        .submitLabel(isCreating ? .next : .go)
-                        .onSubmit { isCreating ? (focus = .confirm) : submit() }
-                        .fieldStyle()
-
-                    if isCreating {
-                        SecureField("Confirm password", text: $confirm)
-                            .textContentType(.newPassword)
-                            .focused($focus, equals: .confirm)
-                            .submitLabel(.go)
-                            .onSubmit(submit)
-                            .fieldStyle()
-                    }
-                }
-
-                if let errorMessage {
-                    Text(errorMessage)
-                        .font(.footnote)
-                        .foregroundStyle(.red)
-                        .multilineTextAlignment(.center)
-                }
-
-                Button(action: submit) {
-                    Group {
-                        if isBusy {
-                            ProgressView().tint(.white)
-                        } else {
-                            Text(mode.rawValue).fontWeight(.semibold)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, minHeight: 28)
-                }
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.capsule)
-                .controlSize(.large)
-                .disabled(isBusy)
+                form
+                    .padding(.top, 34)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 72)
+            .padding(.horizontal, 18)
+            .padding(.top, 76)
             .padding(.bottom, 24)
-            .animation(.snappy, value: mode)
+            .animation(.snappy(duration: 0.3), value: mode)
         }
         .scrollDismissesKeyboard(.interactively)
-        .background(Color(.systemGroupedBackground))
+        .background(Pearl.page.ignoresSafeArea())
         .onChange(of: mode) {
             errorMessage = nil
             confirm = ""
         }
     }
 
-    private var header: some View {
+    private var form: some View {
         VStack(spacing: 10) {
-            Image(systemName: "checkmark")
-                .font(.system(size: 30, weight: .bold))
-                .foregroundStyle(.white)
-                .frame(width: 64, height: 64)
-                .background(.tint, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .padding(.bottom, 6)
-            Text("Todo")
-                .font(.largeTitle.bold())
-            Text(isCreating ? "Create an account to save your tasks." : "Sign in to see your tasks.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            PearlSegmented(selection: $mode, options: [
+                (.signIn, "Sign In"),
+                (.createAccount, "Create Account"),
+            ])
+            .padding(.bottom, 6)
+
+            TextField("Email", text: $email)
+                .textContentType(.username)
+                .keyboardType(.emailAddress)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .focused($focus, equals: .email)
+                .submitLabel(.next)
+                .onSubmit { focus = .password }
+                .pearlWell(icon: "envelope.fill")
+
+            SecureField("Password", text: $password)
+                .textContentType(isCreating ? .newPassword : .password)
+                .focused($focus, equals: .password)
+                .submitLabel(isCreating ? .next : .go)
+                .onSubmit { isCreating ? (focus = .confirm) : submit() }
+                .pearlWell(icon: "lock.fill")
+
+            if isCreating {
+                SecureField("Confirm password", text: $confirm)
+                    .textContentType(.newPassword)
+                    .focused($focus, equals: .confirm)
+                    .submitLabel(.go)
+                    .onSubmit(submit)
+                    .pearlWell(icon: "lock.fill")
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+
+            if let errorMessage {
+                Text(errorMessage)
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 4)
+            }
+
+            Button(action: submit) {
+                if isBusy {
+                    ProgressView().tint(Pearl.onInk)
+                } else {
+                    Text(mode.title)
+                }
+            }
+            .buttonStyle(InkButtonStyle())
+            .disabled(isBusy)
+            .padding(.top, 8)
         }
+        .padding(18)
+        .pearlCard(radius: 30)
     }
 
     private func submit() {
@@ -139,13 +141,5 @@ struct AuthView: View {
             }
             isBusy = false
         }
-    }
-}
-
-private extension View {
-    func fieldStyle() -> some View {
-        padding(.horizontal, 16)
-            .padding(.vertical, 14)
-            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
