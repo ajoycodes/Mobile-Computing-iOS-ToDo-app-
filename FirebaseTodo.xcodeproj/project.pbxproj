@@ -17,6 +17,7 @@
 		B375F871AF06A53C30BAB960 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB134FF6B0C3F1A8BB5E309C /* AuthView.swift */; };
 		C85085B2D05BCB672F44F081 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9945869972A1D02E4FFAC7B /* AuthStore.swift */; };
 		E0B39C26AB496C824781A0CC /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 695D5DFDF3E2D07E13A0B98A /* FirebaseFirestore */; };
+		FC9EB46717BB533AA452CE26 /* Pearl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7028C7EAD312C3F0388A8C /* Pearl.swift */; };
 		FEA54C4C3FA857D385223350 /* TaskEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 722ADB12059A30195C128E05 /* TaskEditorView.swift */; };
 		FF3ABF226DD9E31F3EBC8C91 /* TodoTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = B56BDEAE39F23580B003889C /* TodoTask.swift */; };
 /* End PBXBuildFile section */
@@ -26,6 +27,7 @@
 		337F8B2A4CEF1DC75866721A /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		3AEDAAFBEC45DF960D6D2473 /* FirebaseSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseSetup.swift; sourceTree = "<group>"; };
 		722ADB12059A30195C128E05 /* TaskEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskEditorView.swift; sourceTree = "<group>"; };
+		8C7028C7EAD312C3F0388A8C /* Pearl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pearl.swift; sourceTree = "<group>"; };
 		94AC43C184DD7B8D039D18E7 /* TaskListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListView.swift; sourceTree = "<group>"; };
 		AB134FF6B0C3F1A8BB5E309C /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		B56BDEAE39F23580B003889C /* TodoTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoTask.swift; sourceTree = "<group>"; };
@@ -72,6 +74,7 @@
 				C45E4D222AAE2DF5F6662F73 /* Assets.xcassets */,
 				18986276C313B638D4EC2850 /* App */,
 				687A3BF8D446E4E84C715ACE /* Auth */,
+				C345A663C693DFD8CD975BC2 /* Design */,
 				CE102E728A98A063DF82166A /* Tasks */,
 			);
 			path = FirebaseTodo;
@@ -84,6 +87,14 @@
 				AB134FF6B0C3F1A8BB5E309C /* AuthView.swift */,
 			);
 			path = Auth;
+			sourceTree = "<group>";
+		};
+		C345A663C693DFD8CD975BC2 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				8C7028C7EAD312C3F0388A8C /* Pearl.swift */,
+			);
+			path = Design;
 			sourceTree = "<group>";
 		};
 		CE102E728A98A063DF82166A /* Tasks */ = {
@@ -208,6 +219,7 @@
 				B375F871AF06A53C30BAB960 /* AuthView.swift in Sources */,
 				AB2E52B075D2D30A3C8D5888 /* FirebaseSetup.swift in Sources */,
 				772D2B5E8AA837B1872BDD2F /* FirebaseTodoApp.swift in Sources */,
+				FC9EB46717BB533AA452CE26 /* Pearl.swift in Sources */,
 				1534F2C6BAA7C5E40629040D /* RootView.swift in Sources */,
 				FEA54C4C3FA857D385223350 /* TaskEditorView.swift in Sources */,
 				93E0764322EEE26687137AD6 /* TaskListView.swift in Sources */,
