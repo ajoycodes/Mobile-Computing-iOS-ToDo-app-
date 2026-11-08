@@ -1,0 +1,60 @@
+name: FirebaseTodo
+options:
+  bundleIdPrefix: com.ajoy
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+packages:
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk
+    from: "13.1.1"
+targets:
+  FirebaseTodo:
+    type: application
+    platform: iOS
+    sources:
+      - path: FirebaseTodo
+        # Kept out of git and out of the project file, so a fresh clone still
+        # builds. The script below copies it into the app when it exists.
+        excludes:
+          - GoogleService-Info.plist
+    postCompileScripts:
+      - name: Copy Firebase config if present
+        basedOnDependencyAnalysis: false
+        script: |
+          PLIST="${SRCROOT}/FirebaseTodo/GoogleService-Info.plist"
+          if [ -f "$PLIST" ]; then
+            cp "$PLIST" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleService-Info.plist"
+          else
+            echo "warning: FirebaseTodo/GoogleService-Info.plist not found. The app will show the Connect Firebase screen."
+          fi
+    dependencies:
+      - package: Firebase
+        product: FirebaseAuth
+      - package: Firebase
+        product: FirebaseFirestore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ajoy.todo
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Todo
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        OTHER_LDFLAGS: -ObjC
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_PREVIEWS: YES
+        # The copy script reads a file that may not exist, so it can't be sandboxed.
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+    scheme:
+      # Tick this in Product > Scheme > Edit Scheme > Arguments to run against
+      # the local Firebase emulators instead of the real project.
+      commandLineArguments:
+        "-useEmulators": false

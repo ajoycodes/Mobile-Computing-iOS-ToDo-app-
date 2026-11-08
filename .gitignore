@@ -1,0 +1,15 @@
+build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+.DS_Store
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Firebase config for the real project. Download your own from the Firebase
+# console (see README) and put it in FirebaseTodo/.
+FirebaseTodo/GoogleService-Info.plist
+
+# Design mockups and their tools (not part of the app)
+Mockups/
