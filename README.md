@@ -1,11 +1,19 @@
 # Firebase Todo (iOS)
 
-A SwiftUI todo list for iPhone. Each user signs in with email and password and keeps their own tasks in Cloud Firestore.
+A SwiftUI todo list for iPhone, built for the Mobile Computing course. Each user signs in with email and password and keeps their own tasks in Cloud Firestore.
+
+<p>
+  <img src="Screenshots/sign-in.png" width="200" alt="Create account screen">
+  <img src="Screenshots/tasks.png" width="200" alt="Task list">
+  <img src="Screenshots/new-task.png" width="200" alt="New task sheet">
+  <img src="Screenshots/tasks-dark.png" width="200" alt="Task list in dark mode">
+</p>
 
 - Each task has a **title** and a **description**.
-- Full CRUD: add (+), read (live list), edit (tap a task), delete (swipe left or long-press).
-- **Firebase Authentication** with email and password: create account, sign in, sign out.
+- Full CRUD: **New Task** button to add, a live list to read, tap a card to edit, and the ••• menu (or a long press) to edit or delete, with a confirmation before deleting.
+- **Firebase Authentication** with email and password: create account, sign in, sign out (tap your initial at the top right).
 - Tasks are stored in **Firestore** under the signed-in user, and security rules stop anyone else from reading or changing them.
+- White cards on a pearl-grey page, a black main button, and a matching dark mode that follows the phone's setting.
 
 SwiftUI, iOS 17+, Firebase iOS SDK 13 (Swift Package Manager). The Xcode project is generated from `project.yml` with [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
@@ -67,11 +75,14 @@ FirebaseTodo/
     AuthStore.swift         Signed-in user, sign in / create account / sign out, error messages
     AuthView.swift          Sign in and create account screen
   Tasks/
-    TodoTask.swift          Task model
+    TodoTask.swift          Task model and "2h ago" style times
     TaskStore.swift         Firestore CRUD: add, live read, update, delete
-    TaskListView.swift      Task list with add, edit, swipe-to-delete
-    TaskEditorView.swift    Title + description form for adding and editing
+    TaskListView.swift      Task cards with a ••• menu, account menu, New Task button
+    TaskEditorView.swift    Title + description sheet for adding and editing
+  Design/
+    Pearl.swift             Colours (light and dark), card style, black button, fields, segmented switch
   Assets.xcassets           App icon
+Screenshots/                Screenshots used in this README
 project.yml                 XcodeGen project definition
 firestore.rules             Firestore security rules
 firebase.json               Emulator ports for the Firebase CLI
